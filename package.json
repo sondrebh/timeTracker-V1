@@ -8,8 +8,6 @@
   "license": "MIT",
   "dependencies": {
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "babel-preset-react": "^6.24.1"
   }
 }
