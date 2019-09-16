@@ -20,9 +20,26 @@ var Box = function (_React$Component) {
     }
 
     _createClass(Box, [{
+        key: "handleInput",
+        value: function handleInput(e) {
+            if (e.key === 'Enter') {}
+        }
+    }, {
         key: "render",
         value: function render() {
-            return React.createElement("div", { className: this.props.position + " Box" });
+            return React.createElement(
+                "div",
+                { className: this.props.position + " Box" },
+                React.createElement(
+                    "p",
+                    { className: "boxTitle" },
+                    this.props.title
+                ),
+                this.props.position === "center" && React.createElement("input", {
+                    onKeyDown: this.handleInput,
+                    placeholder: "Your task here..."
+                })
+            );
         }
     }]);
 
@@ -46,9 +63,9 @@ var App = function (_React$Component2) {
             return React.createElement(
                 "div",
                 { className: "App" },
-                React.createElement(Box, { position: "left" }),
-                React.createElement(Box, { position: "center" }),
-                React.createElement(Box, { position: "right" })
+                React.createElement(Box, { title: "Summarized log", position: "left" }),
+                React.createElement(Box, { title: "timeTracker V1", position: "center" }),
+                React.createElement(Box, { title: "Raw log", position: "right" })
             );
         }
     }]);
