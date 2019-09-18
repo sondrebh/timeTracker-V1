@@ -34,11 +34,16 @@
 .center {
     justify-self: center;
 
+    height: 0px;
+
     border-radius: 12px;;
 }
 
 .right {
     justify-self: right;
+
+    height: unset;
+    width: 0px;
 
     border-radius: 12px 0px 0px 12px;
 }
@@ -75,7 +80,7 @@
     width: 260px;
     height: 40px;
 
-    background: #2D2D2D;
+    background: #2d2d2d;
     box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.25);
     border-radius: 50px;
     border: none;
@@ -83,13 +88,41 @@
 
     font-weight: normal;
     font-size: 18px;
-
-    color: #F2F2F2;
+ 
+    color: #dadada;
 
     text-align: center;
 }
 
+.taskContainer {
+    width: 100%;
+}
 
+.task {
+    height: 60px;
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 
+    justify-items: center;
+    align-items: center;
+
+    font-size: 18px;
+    font-weight: normal;
+
+    color: #dadada;
+}
+
+.taskContainer:nth-child(odd) {
+    background-color: #2D2D2D;
+}
+
+a {
+    color: #F2994A;
+}
+
+div.right.Box > div:last-child {
+    border-bottom-left-radius: 12px;
+}
 
 

@@ -58,3 +58,27 @@ html, body {
 	height: 100%;
 	width: 100%;
 }
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../../assets/poppins-font/Poppins-Regular.woff2') format('woff2'),
+        url('../../assets/poppins-font/Poppins-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../../assets/poppins-font/Poppins-SemiBold.woff2') format('woff2'),
+        url('../../assets/poppins-font/Poppins-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('../../assets/poppins-font/Poppins-Medium.woff2') format('woff2'),
+        url('../../assets/poppins-font/Poppins-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
