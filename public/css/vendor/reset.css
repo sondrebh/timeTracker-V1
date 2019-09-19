@@ -52,6 +52,8 @@ table {
 html, body {
 	height: 100%;
 	width: 100%;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 #root {
@@ -82,3 +84,4 @@ html, body {
     font-weight: 500;
     font-style: normal;
 }
+
