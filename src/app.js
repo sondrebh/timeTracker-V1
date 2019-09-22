@@ -1,3 +1,26 @@
+function gen(startDate, endDate) {
+    var diff = endDate.getTime() - startDate.getTime();
+    return round((diff / 60000)/60, 2);
+}
+
+function round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
+
+let current = "";
+
+function updateTime(start, i) {
+    if(current === i) {
+        let task = document.querySelector("#task"+i);
+        task.innerHTML = gen(start, new Date()) + " <a>H</a>";
+        console.log(gen(start, new Date()));
+        setTimeout(()=>{
+            updateTime(start, i);
+        }, 250);
+    }
+}
+
 class Task extends React.Component {
     constructor(props) {
         super(props);
@@ -29,7 +52,7 @@ class Task extends React.Component {
 
             {this.props.pos === "right" &&
                 <div className="task">
-                    <p>{this.props.start} <a>H</a></p>
+                    <p id={this.props.id}>{this.props.start} <a>H</a></p>
                     <p>{this.props.task}</p>
                     <p>{this.props.end}</p>
                 </div>
@@ -72,13 +95,14 @@ class Box extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.getTimeSpent = this.getTimeSpent.bind(this);
+        this.returnDuplicates = this.returnDuplicates.bind(this);
     }
     
     handleChange(e) {
         if (e.key === 'Enter') {
-            
+
             if(this.props.appState.tasks.length) {
-                console.log("s");
                 let finishedTasks = this.props.appState.tasks;
                 finishedTasks[finishedTasks.length - 1].end = new Date();
                 this.props.setAppState(() => {
@@ -90,7 +114,9 @@ class Box extends React.Component {
                 const taskToConcat = [{
                     start: new Date(),
                     task: e.target.value,
-                    end: null
+                    end: null,
+                    spent: 0,
+                    last: null
                 }];
 
                 this.props.setAppState(prevState => {
@@ -105,7 +131,9 @@ class Box extends React.Component {
                 const taskToConcat = [{
                     start: new Date(),
                     task: e.target.value,
-                    end: null
+                    end: null,
+                    spent: 0,
+                    last: null
                 }];
                 
                 this.props.setAppState(prevState => {
@@ -157,6 +185,35 @@ class Box extends React.Component {
                 easing: 'spring(1, 90, 18, 16)'
             });
         }
+
+        if(this.props.position === "left") {
+            anime({
+                targets: '.left',
+                width: ['0px','400px'],
+                easing: 'spring(1, 90, 18, 16)'
+            });
+        }
+    }
+
+    createTime(start, end) {
+        return ("0" + start.getHours()).slice(-2) + ':' + ("0" + start.getMinutes()).slice(-2) + " - " + (end === null ? '' : (("0" + end.getHours()).slice(-2) + ':' + ("0" + end.getMinutes()).slice(-2)));
+    }
+
+    getTimeSpent(start, end, i) {
+        if(end === null) {
+            current = i;
+            setTimeout(()=>{updateTime(start, i)}, 500);
+            return gen(start, new Date());
+        } else {
+            current = i;
+            return gen(start, end);
+        }
+    }
+
+    returnDuplicates() {
+        
+        
+        <Task pos="right" key={task.task + i} id={"task" + i} start={this.getTimeSpent(task.start, task.end, i)} task={task.task} end={this.createTime(task.start, task.end)}/>
     }
 
     render() {
@@ -174,9 +231,9 @@ class Box extends React.Component {
                     />
                 }
 
-                {this.props.position === "right" && this.props.appState.tasks.map(task => {
+                {this.props.position === "right" && this.props.appState.tasks.map((task, i) => {
                     return (
-                        <Task pos="right" key={task.task} start={task.start.getHours()} task={task.task} end={task.start.getHours()}/>
+                        <Task pos="right" key={task.task + i} id={"task" + i} start={this.getTimeSpent(task.start, task.end, i)} task={task.task} end={this.createTime(task.start, task.end)}/>
                     );
                 })}
             </div>
@@ -193,7 +250,9 @@ class App extends React.Component {
         this.state = {
             started: false,
             duplicate: false,
-            tasks: []
+            tasks: [],
+            duplicates: [],
+            isDuped: false
         };
 
         this.updateState = this.updateState.bind(this);
@@ -208,7 +267,7 @@ class App extends React.Component {
             <div className="App">
                 {this.state.duplicate ? <Box title="All time spent" position="left" /> : <p></p>}
                 <Box title="timeTracker V1" position="center" appState={this.state} setAppState={a => {this.updateState(a)}} />
-                {this.state.started ? <Box title="Task history" position="right" ref="right" appState={this.state}/> : <p></p>}
+                {this.state.started ? <Box title="Task history" position="right" ref="right" appState={this.state} setAppState={a => {this.updateState(a)}} /> : <p></p>}
             </div>
         );
     }

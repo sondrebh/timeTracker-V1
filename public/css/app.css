@@ -28,6 +28,9 @@
 .left {
     justify-self: left;
 
+    height: unset;
+    width: 0px;
+
     border-radius: 0 12px 12px 0;
 }
 
@@ -113,6 +116,11 @@
     color: #dadada;
 }
 
+.taskContainer:hover {
+    cursor: pointer;
+    background-color: rgba(255, 0, 0, 0.24);
+}
+
 .taskContainer:nth-child(odd) {
     background-color: #2D2D2D;
 }
@@ -123,6 +131,8 @@ a {
 
 div.right.Box > div:last-child {
     border-bottom-left-radius: 12px;
+    box-sizing: border-box;
+    border-right: 4px solid #f1f1f1;
 }
 
 

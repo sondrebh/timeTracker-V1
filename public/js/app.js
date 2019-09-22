@@ -8,6 +8,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+function gen(startDate, endDate) {
+    var diff = endDate.getTime() - startDate.getTime();
+    return round(diff / 60000 / 60, 2);
+}
+
+function round(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
+}
+
+var current = "";
+
+function updateTime(start, i) {
+    if (current === i) {
+        var _task = document.querySelector("#task" + i);
+        _task.innerHTML = gen(start, new Date()) + " <a>H</a>";
+        console.log(gen(start, new Date()));
+        setTimeout(function () {
+            updateTime(start, i);
+        }, 250);
+    }
+}
+
 var Task = function (_React$Component) {
     _inherits(Task, _React$Component);
 
@@ -50,7 +73,7 @@ var Task = function (_React$Component) {
                     { className: "task" },
                     React.createElement(
                         "p",
-                        null,
+                        { id: this.props.id },
                         this.props.start,
                         " ",
                         React.createElement(
@@ -124,6 +147,8 @@ var Box = function (_React$Component2) {
 
         _this2.handleChange = _this2.handleChange.bind(_this2);
         _this2.componentDidMount = _this2.componentDidMount.bind(_this2);
+        _this2.getTimeSpent = _this2.getTimeSpent.bind(_this2);
+        _this2.returnDuplicates = _this2.returnDuplicates.bind(_this2);
         return _this2;
     }
 
@@ -133,7 +158,6 @@ var Box = function (_React$Component2) {
             if (e.key === 'Enter') {
 
                 if (this.props.appState.tasks.length) {
-                    console.log("s");
                     var finishedTasks = this.props.appState.tasks;
                     finishedTasks[finishedTasks.length - 1].end = new Date();
                     this.props.setAppState(function () {
@@ -145,7 +169,9 @@ var Box = function (_React$Component2) {
                     var taskToConcat = [{
                         start: new Date(),
                         task: e.target.value,
-                        end: null
+                        end: null,
+                        spent: 0,
+                        last: null
                     }];
 
                     this.props.setAppState(function (prevState) {
@@ -157,7 +183,9 @@ var Box = function (_React$Component2) {
                     var _taskToConcat = [{
                         start: new Date(),
                         task: e.target.value,
-                        end: null
+                        end: null,
+                        spent: 0,
+                        last: null
                     }];
 
                     this.props.setAppState(function (prevState) {
@@ -210,10 +238,45 @@ var Box = function (_React$Component2) {
                     easing: 'spring(1, 90, 18, 16)'
                 });
             }
+
+            if (this.props.position === "left") {
+                anime({
+                    targets: '.left',
+                    width: ['0px', '400px'],
+                    easing: 'spring(1, 90, 18, 16)'
+                });
+            }
+        }
+    }, {
+        key: "createTime",
+        value: function createTime(start, end) {
+            return ("0" + start.getHours()).slice(-2) + ':' + ("0" + start.getMinutes()).slice(-2) + " - " + (end === null ? '' : ("0" + end.getHours()).slice(-2) + ':' + ("0" + end.getMinutes()).slice(-2));
+        }
+    }, {
+        key: "getTimeSpent",
+        value: function getTimeSpent(start, end, i) {
+            if (end === null) {
+                current = i;
+                setTimeout(function () {
+                    updateTime(start, i);
+                }, 500);
+                return gen(start, new Date());
+            } else {
+                current = i;
+                return gen(start, end);
+            }
+        }
+    }, {
+        key: "returnDuplicates",
+        value: function returnDuplicates() {
+
+            React.createElement(Task, { pos: "right", key: task.task + i, id: "task" + i, start: this.getTimeSpent(task.start, task.end, i), task: task.task, end: this.createTime(task.start, task.end) });
         }
     }, {
         key: "render",
         value: function render() {
+            var _this3 = this;
+
             return React.createElement(
                 "div",
                 { ref: this.props.position, className: this.props.position + " Box" },
@@ -229,8 +292,8 @@ var Box = function (_React$Component2) {
                     maxLength: "18",
                     placeholder: "Your task here..."
                 }),
-                this.props.position === "right" && this.props.appState.tasks.map(function (task) {
-                    return React.createElement(Task, { pos: "right", key: task.task, start: task.start.getHours(), task: task.task, end: task.start.getHours() });
+                this.props.position === "right" && this.props.appState.tasks.map(function (task, i) {
+                    return React.createElement(Task, { pos: "right", key: task.task + i, id: "task" + i, start: _this3.getTimeSpent(task.start, task.end, i), task: task.task, end: _this3.createTime(task.start, task.end) });
                 })
             );
         }
@@ -247,16 +310,18 @@ var App = function (_React$Component3) {
     function App(props) {
         _classCallCheck(this, App);
 
-        var _this3 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+        var _this4 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this3.state = {
+        _this4.state = {
             started: false,
             duplicate: false,
-            tasks: []
+            tasks: [],
+            duplicates: [],
+            isDuped: false
         };
 
-        _this3.updateState = _this3.updateState.bind(_this3);
-        return _this3;
+        _this4.updateState = _this4.updateState.bind(_this4);
+        return _this4;
     }
 
     _createClass(App, [{
@@ -267,16 +332,18 @@ var App = function (_React$Component3) {
     }, {
         key: "render",
         value: function render() {
-            var _this4 = this;
+            var _this5 = this;
 
             return React.createElement(
                 "div",
                 { className: "App" },
                 this.state.duplicate ? React.createElement(Box, { title: "All time spent", position: "left" }) : React.createElement("p", null),
                 React.createElement(Box, { title: "timeTracker V1", position: "center", appState: this.state, setAppState: function setAppState(a) {
-                        _this4.updateState(a);
+                        _this5.updateState(a);
                     } }),
-                this.state.started ? React.createElement(Box, { title: "Task\xA0history", position: "right", ref: "right", appState: this.state }) : React.createElement("p", null)
+                this.state.started ? React.createElement(Box, { title: "Task\xA0history", position: "right", ref: "right", appState: this.state, setAppState: function setAppState(a) {
+                        _this5.updateState(a);
+                    } }) : React.createElement("p", null)
             );
         }
     }]);
